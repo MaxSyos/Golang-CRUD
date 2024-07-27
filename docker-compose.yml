@@ -1,0 +1,27 @@
+version: "3"
+services:
+  golang_crud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # environment:
+    #   - MONGODB_URL=mongodb://mongodb:27017
+    #   - MONGODB_USER_DB=users
+    #   - JWT_SECRET_KEY=<um_valor_randomico>
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongoDatabase
+    networks:
+      - crud_network
+
+  mongoDatabase:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - crud_network
+    restart: always
+
+networks:
+  crud_network:
