@@ -1,13 +1,18 @@
 package controller
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/MaxSyos/Golang-CRUD/src/config/logger"
 	"github.com/MaxSyos/Golang-CRUD/src/config/validation"
 	"github.com/MaxSyos/Golang-CRUD/src/controller/model/request"
+	"github.com/MaxSyos/Golang-CRUD/src/model"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+)
+
+var (
+	UserDomainInterface model.UserDomainInterface
 )
 
 func CreateUser(c *gin.Context) {
@@ -21,5 +26,20 @@ func CreateUser(c *gin.Context) {
 		c.JSON(restErr.Code, restErr)
 		return
 	}
-	fmt.Println(userRequest)
+
+	domain := model.NewUserDomain(
+		userRequest.Email,
+		userRequest.Password,
+		userRequest.Name,
+		userRequest.Age,
+	)
+
+	if err := domain.CreateUser(); err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	logger.Info("Usuário Criado com Sucesso", zap.String("journey", "createUser"))
+	c.String(http.StatusOK, "")
+
 }
